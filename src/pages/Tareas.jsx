@@ -248,6 +248,7 @@ export default function Tareas() {
               </button>
               <button 
                 onClick={handleSave}
+                onTouchEnd={(e) => { e.preventDefault(); handleSave(); }}
                 style={{
                   flex: 1,
                   padding: '12px',

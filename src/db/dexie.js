@@ -9,5 +9,8 @@ db.version(1).stores({
   sync_queue: 'id, table_name, action, synced, created_at',
 })
 
-export default db
+db.version(2).stores({
+  projects: 'id, title, description, due_date, completed, completed_at, created_at',
+})
 
+export default db

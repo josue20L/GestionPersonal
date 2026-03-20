@@ -27,6 +27,15 @@ const createTables = [
     date TEXT,
     completed INTEGER DEFAULT 0
   )`,
+  `CREATE TABLE IF NOT EXISTS projects (
+    id TEXT PRIMARY KEY,
+    title TEXT,
+    description TEXT,
+    due_date TEXT,
+    completed INTEGER DEFAULT 0,
+    completed_at TEXT,
+    created_at TEXT
+  )`
 ]
 
 export async function initDB() {
@@ -34,4 +43,3 @@ export async function initDB() {
     await client.execute(sql)
   }
 }
-

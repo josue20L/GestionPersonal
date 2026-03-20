@@ -261,6 +261,7 @@ export default function Habitos() {
               </button>
               <button
                 onClick={handleSave}
+                onTouchEnd={(e) => { e.preventDefault(); handleSave(); }}
                 style={{
                   flex: 1,
                   padding: '12px',
@@ -268,7 +269,8 @@ export default function Habitos() {
                   backgroundColor: '#7F77DD',
                   border: 'none',
                   color: 'white',
-                  fontWeight: '600'
+                  fontWeight: '600',
+                  cursor: 'pointer'
                 }}
               >
                 Guardar
