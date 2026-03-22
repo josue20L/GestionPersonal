@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import db from '../db/dexie.js'
+import useSync from './useSync'
 
 export default function useTasks() {
   const [tasks, setTasks] = useState([])
+  const { syncNow } = useSync()
 
   async function getTasks(date) {
     const rows = await db.tasks.where('date').equals(date).toArray()
@@ -29,6 +31,7 @@ export default function useTasks() {
       synced: 0,
       created_at: new Date().toISOString(),
     })
+    syncNow()
     return id
   }
 
@@ -46,6 +49,7 @@ export default function useTasks() {
       synced: 0,
       created_at: new Date().toISOString(),
     })
+    syncNow()
   }
 
   async function deleteTask(id) {
@@ -58,8 +62,8 @@ export default function useTasks() {
       synced: 0,
       created_at: new Date().toISOString(),
     })
+    syncNow()
   }
 
   return { tasks, getTasks, addTask, updateTask, deleteTask }
 }
-

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import db from '../db/dexie'
+import useSync from './useSync'
 
 export default function useProjects() {
   const [projects, setProjects] = useState([])
+  const { syncNow } = useSync()
 
   async function getProjects() {
     const rows = await db.projects.toArray()
@@ -30,6 +32,7 @@ export default function useProjects() {
       synced: 0,
       created_at: new Date().toISOString()
     })
+    syncNow()
     return row
   }
 
@@ -43,6 +46,7 @@ export default function useProjects() {
       synced: 0,
       created_at: new Date().toISOString()
     })
+    syncNow()
   }
 
   async function deleteProject(id) {
@@ -55,6 +59,7 @@ export default function useProjects() {
       synced: 0,
       created_at: new Date().toISOString()
     })
+    syncNow()
   }
 
   async function completeProject(id) {

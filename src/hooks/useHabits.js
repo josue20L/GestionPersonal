@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import db from '../db/dexie.js'
+import useSync from './useSync'
 
 export default function useHabits() {
   const [habits, setHabits] = useState([])
+  const { syncNow } = useSync()
 
   async function getHabits() {
     const rows = await db.habits.toArray()
@@ -28,6 +30,7 @@ export default function useHabits() {
       synced: 0,
       created_at: new Date().toISOString(),
     })
+    syncNow()
     return id
   }
 
@@ -41,6 +44,7 @@ export default function useHabits() {
       synced: 0,
       created_at: new Date().toISOString(),
     })
+    syncNow()
   }
 
   async function deleteHabit(id) {
@@ -53,26 +57,45 @@ export default function useHabits() {
       synced: 0,
       created_at: new Date().toISOString(),
     })
+    syncNow()
   }
 
   async function toggleHabitLog(habitId, date) {
     const existing = await db.habit_logs
       .where({ habit_id: habitId, date })
       .first()
+    
+    let logId
+    let payload
+
     if (existing) {
       const next = existing.completed ? 0 : 1
       await db.habit_logs.update(existing.id, { completed: next })
-      return existing.id
+      logId = existing.id
+      payload = { ...existing, completed: next }
     } else {
       const id = crypto.randomUUID()
-      await db.habit_logs.put({
+      payload = {
         id,
         habit_id: habitId,
         date,
         completed: 1,
-      })
-      return id
+      }
+      await db.habit_logs.put(payload)
+      logId = id
     }
+
+    await db.sync_queue.put({
+      id: crypto.randomUUID(),
+      table_name: 'habit_logs',
+      action: 'create', // Usamos create para INSERT OR REPLACE en la API
+      payload,
+      synced: 0,
+      created_at: new Date().toISOString(),
+    })
+    syncNow()
+    
+    return logId
   }
 
   async function getStreak(habitId) {
@@ -97,14 +120,5 @@ export default function useHabits() {
     return streak
   }
 
-  return {
-    habits,
-    getHabits,
-    addHabit,
-    updateHabit,
-    deleteHabit,
-    toggleHabitLog,
-    getStreak,
-  }
+  return { habits, getHabits, addHabit, updateHabit, deleteHabit, toggleHabitLog, getStreak }
 }
-
