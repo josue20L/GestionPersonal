@@ -171,20 +171,15 @@ export default function Dashboard() {
             ) : (
               tasks.map(task => (
                 <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#111827', padding: '14px', borderRadius: '12px', border: '1px solid #1f2937' }}>
+                  <span style={{ flex: 1, fontSize: '15px', textDecoration: task.completed ? 'line-through' : 'none', color: task.completed ? '#6b7280' : '#ffffff' }}>
+                    {task.title}
+                  </span>
                   <div 
                     onClick={() => handleToggleTask(task)}
                     style={{ width: '22px', height: '22px', borderRadius: '50%', border: task.completed ? 'none' : '2px solid #4b5563', backgroundColor: task.completed ? '#1D9E75' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
                   >
                     {task.completed && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
                   </div>
-                  <span style={{ flex: 1, fontSize: '15px', textDecoration: task.completed ? 'line-through' : 'none', color: task.completed ? '#6b7280' : '#ffffff' }}>
-                    {task.title}
-                  </span>
-                  <button onClick={() => handleDeleteTask(task.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    </svg>
-                  </button>
                 </div>
               ))
             )}
