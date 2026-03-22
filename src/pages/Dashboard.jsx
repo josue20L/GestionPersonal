@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [upcomingProjects, setUpcomingProjects] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newTask, setNewTask] = useState({ title: '' })
+  const [currentTime, setCurrentTime] = useState(new Date())
   
   // Estado para acordeones
   const [openSections, setOpenSections] = useState({
@@ -26,19 +27,26 @@ export default function Dashboard() {
     projects: true
   })
 
-  const today = new Date()
-  const dateISO = today.toISOString().slice(0, 10)
+  // Actualizar la hora cada minuto
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60000)
+    return () => clearInterval(timer)
+  }, [])
 
-  // Saludo dinámico
-  const hour = today.getHours()
+  const hour = currentTime.getHours()
   let greeting = 'Buenas noches'
   if (hour >= 5 && hour < 12) greeting = 'Buenos días'
   else if (hour >= 12 && hour < 18) greeting = 'Buenas tardes'
 
-  // Fecha en español
-  const options = { weekday: 'long', day: 'numeric', month: 'long' }
-  const dateFormatted = today.toLocaleDateString('es-ES', options)
-  const capitalizedDate = dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1)
+  // Fecha y hora en español
+  const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' }
+  const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true }
+  
+  const dateFormatted = currentTime.toLocaleDateString('es-ES', dateOptions)
+  const timeFormatted = currentTime.toLocaleTimeString('es-ES', timeOptions).toUpperCase()
+  const capitalizedDateTime = `${dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1)} · ${timeFormatted}`
 
   useEffect(() => {
     refreshData()
@@ -60,7 +68,7 @@ export default function Dashboard() {
     // Próximos proyectos
     const allProj = await getProjects()
     const next7Days = new Date()
-    next7Days.setDate(today.getDate() + 7)
+    next7Days.setDate(currentTime.getDate() + 7)
     
     const upcoming = allProj
       .filter(p => !p.completed && new Date(p.due_date) <= next7Days)
@@ -120,7 +128,7 @@ export default function Dashboard() {
       {/* Header */}
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
         <div>
-          <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 4px 0' }}>{capitalizedDate}</p>
+          <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 4px 0' }}>{capitalizedDateTime}</p>
           <h1 style={{ fontSize: '22px', fontWeight: 'bold', margin: 0 }}>{greeting}</h1>
         </div>
         <button 
