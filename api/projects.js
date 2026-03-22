@@ -1,10 +1,5 @@
 import { createClient } from '@libsql/client'
 
-const client = createClient({
-  url: globalThis.process?.env?.TURSO_URL,
-  authToken: globalThis.process?.env?.TURSO_TOKEN,
-})
-
 function json(res, status, data) {
   res.statusCode = status
   res.setHeader('Content-Type', 'application/json')
@@ -20,6 +15,10 @@ async function readBody(req) {
 }
 
 export default async function handler(req, res) {
+  const client = createClient({
+    url: process.env.TURSO_URL,
+    authToken: process.env.TURSO_TOKEN,
+  })
   try {
     if (req.method === 'GET') {
       const result = await client.execute('SELECT * FROM projects ORDER BY due_date ASC')
